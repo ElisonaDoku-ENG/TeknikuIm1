@@ -1,0 +1,784 @@
+<?php
+// Start session and include config at the very top
+session_start();
+require_once 'includes/config.php';
+
+// Check if user is logged in
+$loggedIn = isset($_SESSION['user']);
+$userType = $loggedIn ? $_SESSION['user']['type'] : null;
+?>
+
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tekniku Im - Platforma e Specialistëve për Shtëpinë Tua</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #E63946; /* Vibrant red for accents */
+            --secondary: #1D3557; /* Dark blue for headings */
+            --light: #F1FAEE; /* Light background */
+            --accent: #A8DADC; /* Light blue accent */
+            --text: #333333; /* Main text color */
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            padding: 80px 0;
+        }
+
+        h1, h2, h3 {
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary);
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary);
+        }
+
+        .btn:hover {
+            background: transparent;
+            color: var(--primary);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(rgba(29, 53, 87, 0.9), rgba(29, 53, 87, 0.9)), url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .header-content {
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .header-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .header-content p {
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            color: rgba(255,255,255,0.9);
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            background: white;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            padding: 15px 0;
+        }
+
+        nav.scrolled .logo,
+        nav.scrolled a {
+            color: var(--secondary);
+        }
+
+        nav.scrolled a:hover {
+            color: var(--primary);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 30px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        /* Search Box */
+        .search-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 800px;
+            margin: 40px auto 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .search-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .search-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #777;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .search-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .search-form {
+            display: flex;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px 0 0 5px;
+            font-size: 1rem;
+        }
+
+        .search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 25px;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: #c1121f;
+        }
+
+        /* Services Section */
+        .services {
+            background: var(--light);
+            text-align: center;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .service-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        /* Features Section */
+        .features {
+            text-align: center;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .feature-card {
+            padding: 30px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            background: var(--secondary);
+            color: white;
+            text-align: center;
+        }
+
+        .how-it-works h2 {
+            color: white;
+        }
+
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            flex-wrap: wrap;
+        }
+
+        .step {
+            flex: 1;
+            min-width: 250px;
+            padding: 0 20px;
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .step-number {
+            background: var(--primary);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            background: var(--light);
+            text-align: center;
+        }
+
+        .testimonial-slider {
+            max-width: 800px;
+            margin: 50px auto 0;
+        }
+
+        .testimonial {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        /* CTA Section */
+        .cta {
+            background: linear-gradient(rgba(29, 53, 87, 0.9), rgba(29, 53, 87, 0.9)), url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+            color: white;
+            text-align: center;
+            padding: 100px 0;
+        }
+
+        .cta h2 {
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--secondary);
+            color: white;
+            padding: 60px 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .footer-logo span {
+            color: var(--primary);
+        }
+
+        .footer-links h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .social-links {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .steps {
+                flex-direction: column;
+            }
+
+            .step {
+                margin-bottom: 40px;
+            }
+
+            section {
+                padding: 60px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation -->
+<nav id="navbar">
+    <div class="container nav-container">
+        <a href="#" class="logo">Tekniku<span>Im</span></a>
+        <ul class="nav-links">
+            <li><a href="#services">Shërbimet</a></li>
+            <li><a href="#features">Përfitimet</a></li>
+            <li><a href="#how-it-works">Si Funksionon</a></li>
+            <li><a href="#testimonials">Komente</a></li>
+            <li><a href="register.html" class="btn btn-secondary">Regjistrohu</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Header -->
+<header>
+    <div class="header-content">
+        <h1>Gjeni Specialistin e Duhur për Çdo Nevojë të Shtëpisë</h1>
+        <p>Platforma jonë ju lidh me teknikë të kualifikuar dhe të vlerësuar në Tiranë. Rezervoni shërbime të besueshme me vetëm disa klikime.</p>
+        <div class="search-box fade-in">
+            <div class="search-tabs">
+                <div class="search-tab active">Kërko Specialist</div>
+                <div class="search-tab">Jeni Specialist?</div>
+            </div>
+            <form class="search-form">
+                <input type="text" class="search-input" placeholder="Çfarë shërbimi kërkoni? (p.sh. elektricist, hidraulik...)">
+                <button type="submit" class="search-btn">Kërko</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<!-- Services Section -->
+<section id="services" class="services">
+    <div class="container">
+        <h2 class="fade-in">Shërbimet Tona</h2>
+        <p class="fade-in">Zgjidhni nga shërbimet tona të specializuara për çdo nevojë të shtëpisë tuaj</p>
+
+        <div class="services-grid">
+            <div class="service-card fade-in">
+                <div class="service-icon"><i class="fas fa-bolt"></i></div>
+                <h3>Elektricist</h3>
+                <p>Shërbime profesionale elektrike për shtëpi dhe biznese</p>
+            </div>
+
+            <div class="service-card fade-in">
+                <div class="service-icon"><i class="fas fa-faucet"></i></div>
+                <h3>Hidraulik</h3>
+                <p>Zgjidhje të shpejta për problemet hidraulike</p>
+            </div>
+
+            <div class="service-card fade-in">
+                <div class="service-icon"><i class="fas fa-paint-roller"></i></div>
+                <h3>Bojaxhi</h3>
+                <p>Punime lyerjeje me cilësi të lartë</p>
+            </div>
+
+            <div class="service-card fade-in">
+                <div class="service-icon"><i class="fas fa-hammer"></i></div>
+                <h3>Ndërtim</h3>
+                <p>Specialistë për çdo lloj pune ndërtimi</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="features">
+    <div class="container">
+        <h2 class="fade-in">Pse të Zgjidhni Tekniku Im?</h2>
+        <p class="fade-in">Platforma jonë ofron zgjidhje unike për nevojat tuaja të mirëmbajtjes së shtëpisë</p>
+
+        <div class="features-grid">
+            <div class="feature-card fade-in">
+                <div class="feature-icon"><i class="fas fa-star"></i></div>
+                <h3>Vlerësime të Besueshme</h3>
+                <p>Lexoni komente dhe vlerësime nga klientët e tjerë për të zgjedhur specialistin më të mirë</p>
+            </div>
+
+            <div class="feature-card fade-in">
+                <div class="feature-icon"><i class="fas fa-clock"></i></div>
+                <h3>Rezervim i Shpejtë</h3>
+                <p>Rezervoni shërbime në pak minuta, në çdo kohë të ditës</p>
+            </div>
+
+            <div class="feature-card fade-in">
+                <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                <h3>Siguri e Plotë</h3>
+                <p>Të gjithë specialistët tanë janë të verifikuar dhe të siguruar</p>
+            </div>
+
+            <div class="feature-card fade-in">
+                <div class="feature-icon"><i class="fas fa-comments"></i></div>
+                <h3>Komunikim i Drejtpërdrejtë</h3>
+                <p>Komunikoni drejtpërdrejt me specialistin për çdo detaj</p>
+            </div>
+
+            <div class="feature-card fade-in">
+                <div class="feature-icon"><i class="fas fa-money-bill-wave"></i></div>
+                <h3>Çmime Konkurruese</h3>
+                <p>Ofrojmë çmime të arsyeshme pa kompromis për cilësinë</p>
+            </div>
+
+            <div class="feature-card fade-in">
+                <div class="feature-icon"><i class="fas fa-headset"></i></div>
+                <h3>Mbështetje 24/7</h3>
+                <p>Ekipi jonë është gjithmonë në dispozicion për të ndihmuar</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section id="how-it-works" class="how-it-works">
+    <div class="container">
+        <h2 class="fade-in">Si Funksionon?</h2>
+        <p class="fade-in">Vetëm 3 hapa të thjeshtë për të gjetur specialistin e duhur</p>
+
+        <div class="steps">
+            <div class="step fade-in">
+                <div class="step-number">1</div>
+                <h3>Kërkoni</h3>
+                <p>Shkruani shërbimin që ju nevojitet ose zgjidhni nga kategoritë tona</p>
+            </div>
+
+            <div class="step fade-in">
+                <div class="step-number">2</div>
+                <h3>Krahasoni</h3>
+                <p>Shikoni profilet, vlerësimet dhe çmimet e specialistëve</p>
+            </div>
+
+            <div class="step fade-in">
+                <div class="step-number">3</div>
+                <h3>Rezervoni</h3>
+                <p>Zgjidhni kohën e përshtatshme dhe konfirmoni rezervimin</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section id="testimonials" class="testimonials">
+    <div class="container">
+        <h2 class="fade-in">Çfarë Thonë Klientët Tanë</h2>
+        <p class="fade-in">Lexoni përvojat e klientëve tanë të kënaqur</p>
+
+        <div class="testimonial-slider fade-in">
+            <div class="testimonial">
+                <p class="testimonial-text">"Përdorova Tekniku Im për një problem elektrik dhe isha shumë i kënaqur me shërbimin. Elektricisti erdhi në kohë, e zgjidhi problemin shpejt dhe me çmim të arsyeshëm."</p>
+                <p class="testimonial-author">- Anisa K., Tiranë</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta">
+    <div class="container">
+        <h2 class="fade-in">Gati për të Gjetur Specialistin e Përsosur?</h2>
+        <a href="#" class="btn fade-in">Kërkoni Tani</a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-about">
+                <div class="footer-logo">Tekniku<span>Im</span></div>
+                <p>Platforma e parë në Shqipëri për gjetjen e specialistëve të besueshëm për nevojat e shtëpisë.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <h3>Shërbimet</h3>
+                <ul>
+                    <li><a href="#">Elektricist</a></li>
+                    <li><a href="#">Hidraulik</a></li>
+                    <li><a href="#">Bojaxhi</a></li>
+                    <li><a href="#">Ndërtim</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h3>Kompania</h3>
+                <ul>
+                    <li><a href="#">Rreth Nesh</a></li>
+                    <li><a href="#">Puna</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Kontakto</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h3>Ndihmë</h3>
+                <ul>
+                    <li><a href="#">Pyetjet e Shpeshta</a></li>
+                    <li><a href="#">Kushtet e Përdorimit</a></li>
+                    <li><a href="#">Politika e Privatësisë</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="copyright">
+            <p>&copy; 2024 Tekniku Im. Të gjitha të drejtat e rezervuara.</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Navigation scroll effect
+    window.addEventListener('scroll', function() {
+        const navbar = document.getElementById('navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // Scroll animations
+    const fadeElements = document.querySelectorAll('.fade-in');
+
+    const fadeObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    fadeElements.forEach(element => {
+        fadeObserver.observe(element);
+    });
+
+    // Search tabs functionality
+    const searchTabs = document.querySelectorAll('.search-tab');
+
+    searchTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            searchTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // Smooth scrolling for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

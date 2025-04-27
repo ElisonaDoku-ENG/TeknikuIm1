@@ -1,0 +1,258 @@
+/* File: styles.css */
+
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body and Canvas background */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #0A1F44; /* dark navy */
+    color: white;
+    overflow-x: hidden;
+    position: relative;
+    min-height: 100vh;
+}
+
+/* Canvas Background */
+#backgroundCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+/* Header Section */
+header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #0A1F44;
+    text-align: center;
+    padding: 0 20px;
+}
+
+header h1 {
+    font-size: 3em;
+    color: #3B8BD4; /* light blue */
+    margin-bottom: 20px;
+}
+
+header p {
+    font-size: 1.2em;
+    color: #D0E7FF; /* softer light blue */
+}
+
+/* Features Section */
+.features {
+    padding: 80px 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.features h2 {
+    font-size: 2.5em;
+    margin-bottom: 40px;
+    color: #3B8BD4;
+}
+
+.features ul {
+    list-style: none;
+}
+
+.feature-item {
+    background: rgba(255,255,255,0.05);
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 1.2em;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 1s ease;
+}
+
+/* Active Class to Trigger Animation */
+.feature-item.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+/* File: styles.css */
+
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #0A1F44; /* dark navy */
+    color: white;
+    overflow-x: hidden;
+    position: relative;
+    min-height: 100vh;
+}
+
+/* Canvas Background */
+#backgroundCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+/* Header Section */
+header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #0A1F44;
+    text-align: center;
+    padding: 0 20px;
+}
+
+header h1 {
+    font-size: 3em;
+    color: #3B8BD4; /* light blue */
+    margin-bottom: 20px;
+}
+
+header p {
+    font-size: 1.2em;
+    color: #D0E7FF; /* softer light blue */
+}
+
+/* Main Features Section */
+.features {
+    padding: 80px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Feature Blocks */
+.feature-block {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 80px 0;
+    flex-wrap: wrap;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 1s ease;
+}
+
+/* Left and Right Alignment */
+.feature-block.left .text {
+    order: 1;
+    flex: 1;
+    padding: 20px;
+}
+.feature-block.left .image {
+    order: 2;
+    flex: 1;
+    padding: 20px;
+}
+
+.feature-block.right .text {
+    order: 2;
+    flex: 1;
+    padding: 20px;
+}
+.feature-block.right .image {
+    order: 1;
+    flex: 1;
+    padding: 20px;
+}
+
+/* Text Styling */
+.feature-block .text h3 {
+    color: #3B8BD4;
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+.feature-block .text p {
+    font-size: 1.1em;
+    color: #D0E7FF;
+    line-height: 1.6;
+}
+
+/* Image Styling (Square Placeholder) */
+.feature-block .image {
+    background: rgba(59, 139, 212, 0.2);
+    width: 100%;
+    max-width: 300px;
+    height: 300px;
+    border-radius: 15px;
+    transition: all 1s ease;
+}
+.welcome-message {
+    text-align: center;
+    color: var(--text);
+}
+
+.welcome-message h3 {
+    color: var(--primary);
+    margin-bottom: 10px;
+}
+
+.welcome-message a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.welcome-message a:hover {
+    text-decoration: underline;
+}
+
+.auth-prompt {
+    text-align: center;
+    padding: 15px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 5px;
+}
+
+.auth-prompt a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-prompt a:hover {
+    text-decoration: underline;
+}
+
+/* Active Animation when visible */
+.feature-block.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Responsive */
+@media(max-width: 768px) {
+    .feature-block {
+        flex-direction: column;
+        text-align: center;
+    }
+    .feature-block.left .text, .feature-block.right .text,
+    .feature-block.left .image, .feature-block.right .image {
+        order: initial;
+    }
+    .feature-block .image {
+        margin-bottom: 20px;
+    }
+}
+
